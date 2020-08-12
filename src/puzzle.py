@@ -23,6 +23,9 @@ def get_driver():
 
 
 class Puzzle:
+    def __init__(self):
+        self.has_options = True
+
     def get_options(self, driver: WebDriver, timeout: int):
         driver.get(f"https://{self.subdomain}.puzzlebaron.com/init.php")
         return self.get_options_internal(driver, timeout)
@@ -30,10 +33,11 @@ class Puzzle:
     def get_puzzle(self, driver: WebDriver, timeout: int):
         driver.get(f"https://{self.subdomain}.puzzlebaron.com/init.php")
 
-        self.select_options(driver, timeout)
+        if self.has_options:
+            self.select_options(driver, timeout)
 
-        # Create Puzzle
-        driver.find_element_by_name("CreatePuzzle").click()
+            # Create Puzzle
+            driver.find_element_by_name("CreatePuzzle").click()
         WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((By.NAME, "submit"))
         ).click()

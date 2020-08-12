@@ -5,6 +5,7 @@ import click
 from docx import Document
 from docx.shared import Inches
 
+from acrostics import Acrostics
 from logic import LogicPuzzle
 from puzzle import Puzzle, get_driver
 from rws import ReverseWordSearch
@@ -54,6 +55,22 @@ def puzzle(cli_opts, opts, puzzle, options: bool, f):
 
 
 @cli.command()
+@click.pass_obj
+def acrostics(opts):
+    """Download Acrostics
+    """
+    puzzle(
+        opts,
+        [],
+        Acrostics(),
+        False,
+        lambda: get_puzzles(
+            opts["n"], Acrostics(), opts["output_file_name"], opts["timeout"],
+        ),
+    )
+
+
+@cli.command()
 @click.argument("grid-size", type=int, required=False)
 @click.argument("difficulty", type=int, required=False)
 @click.option(
@@ -61,6 +78,8 @@ def puzzle(cli_opts, opts, puzzle, options: bool, f):
 )
 @click.pass_obj
 def logic(opts, grid_size: int, difficulty: int, options: bool):
+    """Download Logic Puzzles
+    """
     puzzle(
         opts,
         [("Grid Size", grid_size), ("Difficulty", difficulty)],
@@ -80,6 +99,8 @@ def logic(opts, grid_size: int, difficulty: int, options: bool):
 @click.option("-o", "--options", is_flag=True, help="Show grid size options.")
 @click.pass_obj
 def rws(opts, grid_size: int, options: bool):
+    """Download Reverse Word Searches
+    """
     puzzle(
         opts,
         [("Grid Size", grid_size)],
