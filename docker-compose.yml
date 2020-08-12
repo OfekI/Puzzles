@@ -1,0 +1,16 @@
+version: "3"
+services:
+  puzzles:
+    build: .
+    depends_on:
+      - selenium-chrome
+    environment:
+      - SELENIUM_HOST=selenium-chrome
+      - SELENIUM_PORT=4444
+      - OUTPUT_DIR=puzzles_out
+    volumes:
+      - ~/Downloads:/puzzles_out
+  selenium-chrome:
+    image: selenium/standalone-chrome
+    volumes:
+      - /dev/shm:/dev/shm
