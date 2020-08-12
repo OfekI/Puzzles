@@ -1,6 +1,7 @@
 import os
 
 from docx import Document
+from docx.document import Document as Doc
 from docx.table import _Cell
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -29,7 +30,6 @@ class Puzzle:
     def get_puzzle(self, driver: WebDriver, timeout: int):
         driver.get(f"https://{self.subdomain}.puzzlebaron.com/init.php")
 
-        # print('Selecting options...')
         self.select_options(driver, timeout)
 
         # Create Puzzle
@@ -43,7 +43,6 @@ class Puzzle:
             self.scroll_extent(driver, "Width"), self.scroll_extent(driver, "Height")
         )
 
-        # print('Scraping puzzle...')
         return self.get_populated_puzzle(driver, timeout)
 
     def scroll_extent(self, driver: WebDriver, direction: str) -> str:

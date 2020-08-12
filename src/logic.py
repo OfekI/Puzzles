@@ -28,7 +28,7 @@ class LogicPuzzle(Puzzle):
             for option in select_d.find_elements_by_tag_name("option")
         }
 
-        return gs_options, d_options
+        return [("Grid Size", gs_options), ("Difficulty", d_options)]
 
     def select_options(self, driver: WebDriver, timeout: int):
         select_gs = Select(driver.find_element_by_id("sg"))
