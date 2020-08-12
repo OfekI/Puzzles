@@ -1,4 +1,5 @@
 import os
+import sys
 
 from docx import Document
 from docx.document import Document as Doc
