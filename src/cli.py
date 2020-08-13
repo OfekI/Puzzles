@@ -9,6 +9,7 @@ from acrostics import Acrostics
 from logic import LogicPuzzle
 from puzzle import Puzzle, get_driver
 from rws import ReverseWordSearch
+from wordsearch import WordSearch
 
 
 @click.group()
@@ -115,6 +116,22 @@ def rws(opts, grid_size: int, options: bool):
     )
 
 
+@cli.command()
+@click.pass_obj
+def wordsearch(opts):
+    """Download Word Searches
+    """
+    puzzle(
+        opts,
+        [],
+        WordSearch(),
+        False,
+        lambda: get_puzzles(
+            opts["n"], WordSearch(), opts["output_file_name"], opts["timeout"],
+        ),
+    )
+
+
 def get_puzzles(n: int, puzzle: Puzzle, output_file_name: str, timeout: int):
     driver = get_driver()
     doc = Document()
@@ -128,12 +145,12 @@ def get_puzzles(n: int, puzzle: Puzzle, output_file_name: str, timeout: int):
         section.right_margin = margin
 
     # TODO: Get rid of this ugly hack that fixes grid size bug for ReverseWordSearch
-    for i in range(n + 1):
-        if i > 0:
-            print(f"Puzzle {i}/{n}")
+    if puzzle.has_options:
         populated_puzzle = puzzle.get_puzzle(driver, timeout)
-        if i > 0:
-            populated_puzzle.add_to_doc(doc)
+    for i in range(n):
+        print(f"Puzzle {i + 1}/{n}")
+        populated_puzzle = puzzle.get_puzzle(driver, timeout)
+        populated_puzzle.add_to_doc(doc)
         os.remove(populated_puzzle.img)
     driver.quit()
 

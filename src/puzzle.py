@@ -25,27 +25,38 @@ def get_driver():
 class Puzzle:
     def __init__(self):
         self.has_options = True
+        self.suffix = ""
+
+    def home_url(self):
+        return f"https://{self.subdomain}.puzzlebaron.com/init.php{self.suffix}"
+
+    def get_home(self, driver: WebDriver, timeout: int):
+        driver.get(self.home_url())
 
     def get_options(self, driver: WebDriver, timeout: int):
-        driver.get(f"https://{self.subdomain}.puzzlebaron.com/init.php")
+        self.get_home(driver, timeout)
         return self.get_options_internal(driver, timeout)
 
     def get_puzzle(self, driver: WebDriver, timeout: int):
-        driver.get(f"https://{self.subdomain}.puzzlebaron.com/init.php")
+        self.get_home(driver, timeout)
+
+        WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
+        # Set window size for screenshots
+        driver.set_window_size(
+            self.scroll_extent(driver, "Width"), self.scroll_extent(driver, "Height")
+        )
 
         if self.has_options:
             self.select_options(driver, timeout)
 
             # Create Puzzle
             driver.find_element_by_name("CreatePuzzle").click()
+
         WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((By.NAME, "submit"))
         ).click()
-
-        # Set window size for screenshots
-        driver.set_window_size(
-            self.scroll_extent(driver, "Width"), self.scroll_extent(driver, "Height")
-        )
 
         return self.get_populated_puzzle(driver, timeout)
 
@@ -55,7 +66,7 @@ class Puzzle:
         )
 
     def get_options_internal(self, driver: WebDriver, timeout: int):
-        pass
+        return []
 
     def select_options(self, driver: WebDriver, timeout: int):
         pass
