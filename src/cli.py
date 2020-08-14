@@ -6,6 +6,7 @@ from docx import Document
 from docx.shared import Inches
 
 from acrostics import Acrostics
+from crosswords import Crossword
 from logic import LogicPuzzle
 from puzzle import Puzzle, get_driver
 from rws import ReverseWordSearch
@@ -67,6 +68,22 @@ def acrostics(opts):
         False,
         lambda: get_puzzles(
             opts["n"], Acrostics(), opts["output_file_name"], opts["timeout"],
+        ),
+    )
+
+
+@cli.command()
+@click.pass_obj
+def crosswords(opts):
+    """Download Crosswords
+    """
+    puzzle(
+        opts,
+        [],
+        Crossword(),
+        False,
+        lambda: get_puzzles(
+            opts["n"], Crossword(), opts["output_file_name"], opts["timeout"],
         ),
     )
 
