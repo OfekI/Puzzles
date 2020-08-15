@@ -8,6 +8,7 @@ from docx.shared import Inches
 from acrostics import Acrostics
 from crosswords import Crossword
 from logic import LogicPuzzle
+from numbergrids import Numbergrid
 from puzzle import Puzzle, get_driver
 from rws import ReverseWordSearch
 from wordsearch import WordSearch
@@ -106,6 +107,30 @@ def logic(opts, grid_size: int, difficulty: int, options: bool):
         lambda: get_puzzles(
             opts["n"],
             LogicPuzzle(str(grid_size), str(difficulty)),
+            opts["output_file_name"],
+            opts["timeout"],
+        ),
+    )
+
+
+@cli.command()
+@click.argument("grid-size", type=int, required=False)
+@click.argument("difficulty", type=int, required=False)
+@click.option(
+    "-o", "--options", is_flag=True, help="Show grid size and difficulty options."
+)
+@click.pass_obj
+def numbergrids(opts, grid_size: int, difficulty: int, options: bool):
+    """Download Numbergrids
+    """
+    puzzle(
+        opts,
+        [("Grid Size", grid_size), ("Difficulty", difficulty)],
+        Numbergrid("5", "1"),
+        options,
+        lambda: get_puzzles(
+            opts["n"],
+            Numbergrid(str(grid_size), str(difficulty)),
             opts["output_file_name"],
             opts["timeout"],
         ),

@@ -1,5 +1,3 @@
-from typing import List
-
 from docx import Document
 from docx.shared import Inches
 from selenium.webdriver.common.by import By
@@ -10,11 +8,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from puzzle import PopulatedPuzzle, Puzzle
 
 
-class ReverseWordSearch(Puzzle):
-    def __init__(self, grid_size_option: str):
+class Numbergrid(Puzzle):
+    def __init__(self, grid_size_option: str, difficulty_option: str):
         super().__init__()
-        self.subdomain = "rws"
+        self.subdomain = "numbergrids"
         self.grid_size_option = grid_size_option
+        self.difficulty_option = difficulty_option
 
     def get_options_internal(self, driver: WebDriver, timeout: int):
         input_gs = driver.find_element_by_id("sg")  # Grid Sizes
@@ -23,12 +22,26 @@ class ReverseWordSearch(Puzzle):
             for size in input_gs.get_attribute("data-slider-values").split(",")
         }
 
-        return [("Grid Size", gs_options)]
+        input_d = driver.find_element_by_id("sd")  # Difficulties
+        d_options = {
+            difficulty: [
+                "Very Easy",
+                "Moderate",
+                "Challenging",
+                "Difficult",
+                "Fiendish",
+            ][int(difficulty) - 1]
+            for difficulty in input_d.get_attribute("data-slider-values").split(",")
+        }
+
+        return [("Grid Size", gs_options), ("Difficulty", d_options)]
 
     def select_options(self, driver: WebDriver, timeout: int):
-        # For some reason, this doesn't work on the first puzzle
         driver.execute_script(
             f"document.getElementById('sg').setAttribute('value', '{self.grid_size_option}')"
+        )
+        driver.execute_script(
+            f"document.getElementById('sd').setAttribute('value', '{self.difficulty_option}')"
         )
 
     def get_populated_puzzle(self, driver: WebDriver, timeout: int):
@@ -41,18 +54,14 @@ class ReverseWordSearch(Puzzle):
         )
         board.screenshot(img_path)
 
-        words = driver.find_element_by_class_name("wordlist").text.split("\n")
-        return PopulatedReverseWordSearch(img_path, words)
+        return PopulatedNumbergrid(img_path, self.grid_size_option)
 
 
-class PopulatedReverseWordSearch(PopulatedPuzzle):
-    def __init__(self, img: str, words: List[str], heading_style: str = "Heading 2"):
+class PopulatedNumbergrid(PopulatedPuzzle):
+    def __init__(self, img: str, grid_size: str, heading_style: str = "Heading 2"):
         super().__init__(heading_style)
         self.img = img
-        self.words = words
+        self.grid_size = grid_size
 
     def add_to_doc_internal(self, doc: Document):
-        doc.add_heading("Word List", level=2)
-        doc.add_paragraph(", ".join(self.words))
-        doc.add_picture(self.img, height=Inches(4))
-        doc.add_page_break()
+        doc.add_picture(self.img, width=Inches(int(self.grid_size) / 5 + 2))
