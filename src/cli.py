@@ -7,6 +7,7 @@ from docx.shared import Inches
 
 from acrostics import Acrostics
 from crosswords import Crossword
+from lasergrids import Lasergrid
 from logic import LogicPuzzle
 from numbergrids import Numbergrid
 from puzzle import Puzzle, get_driver
@@ -85,6 +86,30 @@ def crosswords(opts):
         False,
         lambda: get_puzzles(
             opts["n"], Crossword(), opts["output_file_name"], opts["timeout"],
+        ),
+    )
+
+
+@cli.command()
+@click.argument("grid-size", type=int, required=False)
+@click.argument("difficulty", type=int, required=False)
+@click.option(
+    "-o", "--options", is_flag=True, help="Show grid size and difficulty options."
+)
+@click.pass_obj
+def lasergrids(opts, grid_size: int, difficulty: int, options: bool):
+    """Download Lasergrids
+    """
+    puzzle(
+        opts,
+        [("Grid Size", grid_size), ("Difficulty", difficulty)],
+        Lasergrid("1", "1"),
+        options,
+        lambda: get_puzzles(
+            opts["n"],
+            Lasergrid(str(grid_size), str(difficulty)),
+            opts["output_file_name"],
+            opts["timeout"],
         ),
     )
 
